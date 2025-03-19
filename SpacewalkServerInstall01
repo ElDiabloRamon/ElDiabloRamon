@@ -1,0 +1,262 @@
+#!/usr/bin/bash
+# By: Luke Galutia  2020/02/07
+# This is a script to automate the install and setup, 
+# of Spacewalk service on a clean CentOS Virtual Machine.
+#
+#======================================================================#
+# Setting up variables for root name, passwd, and ip address
+echo '#############################################';
+echo '###### Getting remote log in info    ########';
+echo '###### for setup of Spacewalk.       ########';
+echo '#############################################';
+echo;
+echo;
+echo "There are 2 ways to run this script";
+echo " 'a' = Directly on the new Spacewalk server as root...";
+echo " 'b' = Remote location from new Spacewalk server...";
+echo "--------------------------------------------------------";
+read -p 'which type of install is this? (a) or (b): ' InstallVar;
+read -p 'IP Address of new Spacewalk server: ' IPVar;
+read -p 'FQDN Address of new Spacewalk server: ' FQDNVar;
+read -p 'Root / sudo Account name: ' RootVar;
+read -sp 'Password: ' PassVar;
+echo;
+echo Thank you $RootVar we now have the install information to begin.;
+echo;
+echo;
+#======================================================================#
+# Fixing SeLinux permitions on /var/satelite
+echo '#############################################';
+echo '######### HOUSE KEEPING SECTION      ########';
+echo '#############################################';
+echo;
+echo '#############################################';
+echo '###### setting up SeLinux permitions ########';
+echo '###### on /var/satelite directory.   ########';
+echo '#############################################';
+echo;
+if [ $InstallVar = 'a' ] || [$installVar = 'b' ]
+then 
+    # Install on local machine:
+    sudo restorecon -R /var/satelite;
+else
+    # Install remotely:
+    sshpass -p -f $PassVar ssh root@$IPVar 'sudo restorecon -R /var/satelite';
+
+fi
+
+echo;
+#======================================================================#
+# installing the spacewalk repos for 2.9
+echo '#########################################';
+echo '###### INSTALLING SPACEWALK REPO ########';
+echo '######            CentOS 7       ########';
+echo '#########################################';
+echo;
+# When spacewalk has a version change, the URLs will need to be
+# updated to reflect the new version of spacewalk in the future.
+# Also this script will need to be modified for running on CentOS 8.
+#
+if [ $InstallVar = 'a' ] || [$installVar = 'b' ]
+then 
+    # Install on local machine:
+    sudo cp -y ./*.repo /etc/yum.repos.d;
+    sudo cp ./RPM-GPG-KEY* /etc/pki/rpm-gpg;
+    sudo yum clean metadata && yum update;
+    sudo yum -y install -y yum-plugin-tmprepo;
+    sudo yum -y install -y spacewalk-repo --tmprepo=https://copr-be.cloud.fedoraproject.org/results/%40spacewalkproject/spacewalk-2.9/epel-7-x86_64/repodata/repomd.xml --nogpg;
+
+else
+    # Install remotely:
+    sshpass -p -f $PassVar scp RPM-GPG-KEY* root@$IPVar:/etc/pki/rpm-gpg;
+    sshpass -p -f $PassVar scp mariadb.repo root@$IPVar:/etc/yum.repos.d;
+    sshpass -p -f $PassVar scp SpacewalkPostgresAnswerFile.txt rhn-org-trusted-ssl-cert-1.0-1.noarch.rpm root@$IPVar:/root;
+    sshpass -p -f $PassVar ssh root@$IPVar 'sudo yum clean metadata && yum update; sudo yum -y install -y yum-plugin-tmprepo; sudo yum -y install -y spacewalk-repo --tmprepo=https://copr-be.cloud.fedoraproject.org/results/%40spacewalkproject/spacewalk-2.9/epel-7-x86_64/repodata/repomd.xml --nogpg;';
+
+fi
+
+echo;
+#======================================================================#
+# Installing base packages for compatablity.
+echo;
+echo '#########################################';
+echo '### Installing compatability packages ###';
+echo '#########################################';
+echo;
+if [ $InstallVar = 'a' ] || [$installVar = 'b' ]
+then
+    # Install on local machine:
+    sudo yum -y install epel-release;
+    sudo yum -y install rhn-client-tools rhn-check rhn-setup rhnsd m2crypto yum-rhn-plugin vim htop wget spacewalk-setup-postgresql spacewalk-postgresql  osad python-hashlib; 
+
+else
+    # Install remotely:
+    sshpass -p -f $PassVar ssh root@$IPVar 'sudo yum -y install epel-release; sudo yum -y install rhn-client-tools rhn-check rhn-setup rhnsd m2crypto yum-rhn-plugin vim htop wget spacewalk-setup-postgresql spacewalk-postgresql;';
+
+fi
+
+echo;
+#======================================================================#
+# Firewall Settings:
+echo;
+echo '#########################################';
+echo '##### Poking holes in firewall ports ####';
+echo '#########################################';
+echo;
+if [ $InstallVar = 'a' ] || [$installVar = 'b' ]
+then
+    # Install on local machine:
+    sudo firewall-cmd --permanent --add-service=http;
+    sudo firewall-cmd --permanent --add-service=https;
+    sudo firewall-cmd --permanent --add-port=5222/tcp;
+    sudo firewall-cmd --permanent --add-port=5222/udp
+    sudo firewall-cmd --permanent --add-port=tftp/udp;
+    sudo firewall-cmd --reload;
+    sudo systemctl restart firewalld;
+    sudo firewall-cmd –-list-ports;
+else
+    # Install remotely:
+    sshpass -p -f $PassVar ssh root@$IPVar 'sudo firewall-cmd --permanent --add-service=http; sudo firewall-cmd --permanent --add-service=https; sudo firewall-cmd --permanent --add-port=5222/tcp; sudo firewall-cmd --permanent --add-port=5222/udp; sudo firewall-cmd --permanent --add-port=tftp/udp; sudo firewall-cmd --reload; sudo systemctl restart firewalld; sudo firewall-cmd –-list-ports';
+
+fi
+
+
+echo;
+#======================================================================#
+# Starting the configuration of the spacewalk setup.
+echo;
+echo '#############################################';
+echo '#########       INSTALL SECTION      ########';
+echo '#############################################';
+echo;
+echo '#############################################';
+echo '#########     Spacewalk Setup    ############';
+echo '#############################################';
+echo;
+# Manually adding Channels to spacewalk server:
+# repos found here https://github.com/spacewalkproject/spacewalk/blob/master/utils/spacewalk-common-channels.ini
+
+if [ $InstallVar = 'a' ] || [$installVar = 'b' ]
+then
+    # Install on local machine:
+    sudo spacewalk-setup --answer-file=./SpacewalkPostgresAnswerFile.txt;
+
+else
+    # Install remotely:
+    sshpass -p -f $PassVar ssh root@$IPVar 'sudo spacewalk-setup --answer-file=/root/SpacewalkPostgresAnswerFile.txt';
+
+fi
+
+echo;
+#======================================================================#
+# Installing ssl / gpg cents on server.
+echo;
+echo "###############################################";
+echo "#####    Installing Spacewalk Certs    ########";
+echo "###############################################";
+echo;
+echo "#### installing ssl cert on server     ########";
+# Variables for PassVar, IPVar, and RootVar are taken at the 
+# command line at the first of the script.
+
+if [ $InstallVar = 'a' ] || [$installVar = 'b' ]
+then
+    # Install on local machine:
+    sudo rpm -ivh /var/www/html/pub/rhn-org-trusted-ssl-cert-1.0-1.noarch.rpm
+
+else
+    # Install remotely:
+    sshpass -p -f $PassVar ssh root@$IPVar 'rpm -ivh /root/rhn-org-trusted-ssl-cert-1.0-1.noarch.rpm';
+
+fi 
+
+echo;
+#======================================================================#
+# Create Centos 7 base channels.
+echo '##########################################';
+echo '######### Creating Spacewalk Channels ####';
+echo '##########################################';
+echo;
+if [ $InstallVar = 'a' ] || [$installVar = 'b' ]
+then
+    # Install on local machine:
+    sudo /usr/bin/spacewalk-common-channels -u sysroot -p P@ssw0rd -a x86_64  -k unlimited 'centos7*' 'centos7-centosplus*' 'centos7-extras*' 'centos7-updates*' 'centos7-virt*' 'epel7*' 'spacewalk29-server-centos7*' 'spacewalk29-client-centos7*';
+    
+    # Create Centos 8 base channels:
+    # note these dont exist yet, this is just a template for when the repos do become available for 
+    # spacewalk.
+    #sudo /usr/bin/spacewalk-common-channels -u sysroot -p P@ssw0rd -a x86_64  -k unlimited 'centos8*' 'centos8-baseos*' 'centos8-appstream*' 'centos8-highavailability*' 'centos8-powertools*' 'centos8-extras*' 'epel8*' 'spacewalk29-server-centos8*' 'spacewalk29-client-centos8*';
+
+else
+    # Install remotely:
+    sshpass -p -f $PassVar ssh root@$IPVar 'sudo /usr/bin/spacewalk-common-channels -u sysroot -p P@ssw0rd -a x86_64  -k unlimited 'centos7*' 'centos7-centosplus*' 'centos7-extras*' 'centos7-updates*' 'centos7-virt*' 'epel7*' 'spacewalk29-server-centos7*' 'spacewalk29-client-centos7*'';
+
+fi
+
+echo;
+echo;
+echo "###############################################";
+echo "##### Syncing Spacewalk Parent Channels########";
+echo "###############################################";
+echo
+if [ $InstallVar = 'a' ] || [$installVar = 'b' ]
+then
+    # Install on local machine:
+    sudo spacewalk-repo-sync --parent-channel centos7;
+    #sudo spacewalk-repo-sync --parent-channel centos8;
+else
+    # Install remotely:
+    sshpass -p -f $PassVar ssh root@$IPVar 'sudo spacewalk-repo-sync --parent-channel centos7';
+    #sshpass -p -f $PassVar ssh root@$IPVar 'sudo spacewalk-repo-sync --parent-channel centos8';
+
+fi
+
+echo;
+echo;
+echo "###############################################";
+echo "#####    Disabling Stock CentOS Repos  ########";
+echo "###############################################";
+echo;
+if [ $InstallVar = 'a' ] || [$installVar = 'b' ]
+then
+    # Install on local machine:
+    sudo yum clean all;
+    sudo rm -rf /var/cache/yum;
+    sudo yum repolist -v;
+    sudo sed -i 's/enabled=1/enabled=0/g' /etc/yum.repos.d/*;
+    sudo sed -i '/name=/a enabled=0' /etc/yum.repos.d/*;
+
+
+else
+    # Install remotely:
+    sshpass -p -f $PassVar ssh root@$IPVar 'sudo yum clean all; sudo rm -rf /var/cache/yum; sudo yum repolist -v; sudo sed -i 's/enabled=1/enabled=0/g' /etc/yum.repos.d/*; sudo sed -i '/name=/a enabled=0' /etc/yum.repos.d/* ';
+
+fi
+
+echo;
+#======================================================================#
+# Starting Spacewalk service.
+echo;
+echo "###############################################";
+echo "#####    Starting Spacewalk Service    ########";
+echo "###############################################";
+echo;
+if [ $InstallVar = 'a' ] || [$installVar = 'b' ]
+then
+    # Install on local machine:
+    sudo /usr/sbin/spacewalk-service stop;
+    sudo /usr/sbin/spacewalk-service start;
+    sudo /usr/sbin/spacewalk-service status;
+else
+    # Install remotely:
+    sshpass -p -f $PassVar ssh root@$IPVar 'sudo /usr/sbin/spacewalk-service stop; sudo /usr/sbin/spacewalk-service start; sudo /usr/sbin/spacewalk-service status';
+
+fi
+
+echo;
+#======================================================================#
+# Script is done!
+echo "##################################################################";
+echo "##############           DONE WITH INSTALL         ###############";
+echo "##################################################################";
+echo;
