@@ -1,0 +1,1155 @@
+.____    .__                                               
+|    |   |__| ____  __ _____  ___                          
+|    |   |  |/    \|  |  \  \/  /                          
+|    |___|  |   |  \  |  />    <                           
+|_______ \__|___|  /____//__/\_ \                          
+_________/       \/            \/                   .___   
+\_   ___ \  ____   _____   _____ _____    ____    __| _/   
+/    \  \/ /  _ \ /     \ /     \\__  \  /    \  / __ |    
+\     \___(  <_> )  Y Y  \  Y Y  \/ __ \|   |  \/ /_/ |    
+ \______  /\____/|__|_|  /__|_|  (____  /___|  /\____ |    
+___________            \/     .__     \/   __\/      \/    
+\__    ___/___   _____ ______ |  | _____ _/  |_  ____      
+  |    |_/ __ \ /     \\____ \|  | \__  \\   __\/ __ \     
+  |    |\  ___/|  Y Y  \  |_> >  |__/ __ \|  | \  ___/     
+  |____| \___  >__|_|  /   __/|____(____  /__|  \___  >    
+  ________   \/ .__  \/.___          _  _/   ._.   ____/\__
+ /  _____/ __ __|__| __| _/____   __| || |__ | |  /   / /_/
+/   \  ___|  |  \  |/ __ |/ __ \  \   __   / | |  \__/ / \ 
+\    \_\  \  |  /  / /_/ \  ___/   |  ||  |   \|  / / /   \
+ \______  /____/|__\____ |\___  > /_  ~~  _\  __ /_/ /__  /
+        \/              \/    \/    |_||_|    \/   \/   \/ 
+2016/08/15
+By: Luke Galutia
+************************************************************
+
+
+Linux Command Template:
+===========================================================
+
+Basic commands:
+------------------------------------------------------------
+
+ls -la                  # list dir, show everything
+
+stat myFile             # shows lots of inode info on file in question.
+
+df -i                   # displays number of inodes used and free on system drives.
+
+df -h                   # shows 'human readable results for used and free space on system drives.
+
+du -h                   # shows the size of files in specific directory
+
+lsof | grep NameOfFile  # lists all files open on system, pipe the output to grep - looks for specific name.
+
+ps aux | grep ServiceFileName  # get name PID of service running.
+
+kill -9  servicePID     # kills service PID.
+
+xkill                   # kills Xwindows window / service that is hung.
+
+scp FileName user@remote.server.com:/folder/dir/  # secure copy a file between servers over ssh. another sftp method.
+
+ssh user@remote.server.com   # connect to remote server over a secured connection in bash shell / command line.
+
+sftp user@remote.server.com  # secure ftp to remote server over commandline.
+
+chown  uid:gid   fileName    # change ownership of file with user id and group id.
+
+chown -R uid:gid dirName     # changes ownership recursively use only if you KNOW for sure it needs to belong to a user.
+
+man commandName         # the manual files / help on linux commands. 
+
+top                     # shows menu list of services running. type q to quit
+
+more fileName / less fileName   # the more and less commands will print out contents of a file to screen type q to quit.
+
+cat fileName | less     # same as above.
+
+cat fileName | grep word2Search # prints the file contents to screen, and pipes to grep which searches for a string or word.
+
+history                 # shows a printout of the last 1000 commands issued by a user.
+
+head -30 fileName.txt   # prints the top 30 lines of a text file to screen.
+
+tail -30 fileName.txt   # prints the bottom 30 lines of a text file to screen.
+
+nano textFile.txt       # a more user friendly text editor than Vi. do [CTRL X] to close and save.
+
+vi fileName.txt         # opens txt in vi. type i, inorder to start editing. hit sc to escape. type [Shift]ZZ to close and save. 
+                        # more Vi commands check here: https://www.cs.colostate.edu/helpdocs/vi.html
+						
+tar xfvz fileName.tar.gz  # unzips a tar gz file.
+
+bunzip2 filename.tar.bz2;tar xfv fileName.tar  # same as above for *bz2 files.
+
+tar -cjf filename.tar.bz2 FolderFileName	# command to tar and Bzip2 a file or directory. useful with archiving log files.
+					
+netstat | grep serviceName  # shows services accessing nework ports, pipes output to grep to search for text string.
+
+cronjob -l               # list the current cron jobs scheduled for a user.
+
+cronjob -e              # add a cron job for a process or service to run at specific time. type [Shift]ZZ to exit.
+                        # examples of cron setups: http://www.cyberciti.biz/faq/how-do-i-add-jobs-to-cron-under-linux-or-unix-oses/
+						
+find ./dir/name -name "abc.txt"    # search a dir for a file.  more info here: http://www.binarytides.com/linux-find-command-examples/
+
+locate fileName         # a cached database version of find. must run updatedb from root previously for it to work.
+
+pstree -hlZS  progName  # see a list of processes and their child processes in a tree format.
+
+------------------------------------------------------------
+
+
+
+
+
+
+
+getting server info:
+------------------------------------------------------------
+uptime;cat /etc/oracle-release; uname -a;arch;
+
+------------------------------------------------
+
+Show memory usage
+-----------------------------------------------
+free -h
+-----------------------------------------------
+
+Account creation
+------------------------------------------------------------
+# replace (UID#) / (GID#) with user and group ID number #
+useradd -u (UID#) -g (GID#) -c "UserName Account Info" -s /bin/bash -m -d /home/UserName -U UserName
+------------------------------------------------
+
+
+Set password time frame:
+------------------------------------------------
+http://www.thegeekstuff.com/2009/04/chage-linux-password-expiration-and-aging/
+
+chage -M number-of-days username
+
+passwd -e userName   # expire option promts user to change to new password.
+
+----------------------------------------------------
+
+
+
+Account unlock
+------------------------------------------------------------
+pam_tally2 -u UserName
+pam_tally2 -u UserName -r 
+------------------------------------------------
+
+
+Lookup info on user:
+------------------------------------------------------------
+
+id UserName
+grep UserName /etc/passwd
+grep GroupName /etc/group
+------------------------------------------------
+
+
+
+
+
+Mounting Storage and Drives:
+--------------------------------------------------
+# show which drives are mounted:
+mount
+
+# mount a cdrom
+mount /media/cdrom
+
+# unmount a cdrom
+umount /media/cdrom
+
+# Mounting an ISO image
+mount -t iso9660 -o loop path/to/image.iso /mnt/iso
+
+# unmounting an ISO
+umount /mnt/iso
+--------------------------------------------------
+
+
+Mounting Virtual Storage and Drives:
+--------------------------------------------------
+# Using Guestfish to read a guest VM drive from the host....
+# article https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Virtualization_Administration_Guide/sect-the_guestfish_shell.html
+
+guestfish --ro -a /path/to/disk/image
+
+# At the prompt, type run to initiate the library and attach the disk image.
+><fs> run
+><fs> list-filesystems
+	/dev/vda1: ext3  # examples
+	/dev/VolGroup00/LogVol00: ext3 # examples
+	/dev/VolGroup00/LogVol01: swap # examples
+
+><fs> mount-ro /dev/vda2 /
+
+
+#  let guestfish itself inspect the image and mount the file 
+# systems as they would be in the guest virtual machine. 
+
+guestfish --ro -a /path/to/disk/image -i
+
+# A guest virtual machine can be accessed from the command 
+# line when you specify its name as known to libvirt 
+
+guestfish --ro -d GuestName -i
+
+.............................................
+# guestmount - A command-line tool used to mount virtual 
+# machine file systems and disk images on the host machine.
+# This tool is installed as part of the libguestfs-tools-c package
+# http://libguestfs.org/guestmount.1.html
+
+guestmount [--options] -a disk.img -m device [--ro] mountpoint
+
+guestmount [--options] -a disk.img -i [--ro] mountpoint
+
+guestmount [--options] -d Guest -i [--ro] mountpoint
+
+# EXAMPLES
+
+# For a typical Windows guest which has its main filesystem on the first partition:
+guestmount -a windows.img -m /dev/sda1 --ro /mnt
+
+# For a typical Linux guest which has a /boot filesystem on the 
+# first partition, and the root filesystem on a logical volume
+guestmount -a linux.img -m /dev/VG/LV -m /dev/sda1:/boot --ro /mnt
+
+# To get libguestfs to detect guest mountpoints for you
+guestmount -a guest.img -i --ro /mnt
+
+# For a libvirt guest called "Guest" you could do:
+guestmount -d Guest -i --ro /mnt
+
+# If you don't know what filesystems are contained 
+# in a guest or disk image, use virt-filesystems(1) first:
+virt-filesystems -d MyGuest
+
+# If you want to trace the libguestfs calls but without 
+# excessive debugging information, we recommend:
+guestmount [...] --trace /mnt 
+ 
+# If you want to debug the program, we recommend:
+guestmount [...] --trace --verbose /mnt
+ 
+# To unmount the filesystem after using it:
+guestunmount /mnt
+
+
+--------------------------------------------------
+
+
+
+Systemctl commands
+------------------------------------------------------------
+systemctl reboot
+systemctl halt
+systemctl poweroff
+systemctl suspend
+systemctl hibernate
+systemctl hybrid-sleep
+------------------------------------------------
+
+
+
+Single user with local mounted file system
+------------------------------------------------------------
+systemctl rescue
+systemctl emergency
+------------------------------------------------
+
+Multi User with GUI
+------------------------------------------------------------
+systemctl isolate graphical.target
+systemctl set-default multi-user.target   # sets it to boot to CLI mode.
+systemctl get-default
+------------------------------------------------
+
+The service Utility with systemctl 
+------------------------------------------------------------
+systemctl start name.service  # Starts a service.
+systemctl stop name.service  # Stops a service. 
+systemctl restart name.service  # Restarts a service
+systemctl stop name.service  # Stops a service.
+systemctl enable name.service # enables a service
+systemctl disable name.service # disables a service
+systemctl try-restart name.service  # Restarts a service only if it is running.
+systemctl reload name.service   # Reloads configuration.
+systemctl status name.service   # Checks if a service is running. 
+systemctl is-active name.service 
+systemctl list-units --type service --all   # Displays the status of all services. 
+------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+Looking up hardware on the system:
+------------------------------------------------------------
+
+dmidecode | grep -i prod    # grep product details
+
+dmidecode -t 33     # get 64-bit memory error info
+
+dmidecode -t 1       # change number to one from list below...   
+
+  Type   Information
+----------------------------------------
+          0   BIOS
+          1   System
+          2   Base Board
+          3   Chassis
+          4   Processor
+          5   Memory Controller
+          6   Memory Module
+          7   Cache
+          8   Port Connector
+          9   System Slots
+         10   On Board Devices
+         11   OEM Strings
+         12   System Configuration Options
+         13   BIOS Language
+         14   Group Associations
+         15   System Event Log
+         16   Physical Memory Array
+         17   Memory Device
+         18   32-bit Memory Error
+         19   Memory Array Mapped Address
+         20   Memory Device Mapped Address
+         21   Built-in Pointing Device
+         22   Portable Battery
+         23   System Reset
+         24   Hardware Security
+         25   System Power Controls
+         26   Voltage Probe
+         27   Cooling Device
+         28   Temperature Probe
+         29   Electrical Current Probe
+         30   Out-of-band Remote Access
+         31   Boot Integrity Services
+         32   System Boot
+         33   64-bit Memory Error
+         34   Management Device
+         35   Management Device Component
+         36   Management Device Threshold Data
+         37   Memory Channel
+         38   IPMI Device
+         39   Power Supply
+------------------------------------------------------------
+
+
+taking diagnostics from Linux:
+------------------------------------------------------------
+sosreport / sysreport    # gathers config files from /etc/ dir, and log files. zips file to download off server.
+delldiagnostictool       # you can get a tool from dell call DSET utility. run and install as root. will do the same as sosreport
+                         # but gets more info on hardware such as tty logs from raid cards. also BMD /Drac error logs.
+------------------------------------------------------------			 
+						 
+
+						 
+RPM package install 
+------------------------------------------------------------
+
+RPM command and options
+------------------------------------------------------------
+# -q : Query a package.
+# -p : List capabilities this package provides.
+# -R : List capabilities on which this package depends..
+# -i : Install RPM package.
+# -U : Upgrade RPM package.
+
+rpm -qpaR packageName   # prints out list of package names
+
+rpm -qa | grep packageName  # prints out a list of spackages and pipes to grep, to search for name / string.
+
+rpm -ivh packageName.rpm  # installes a package
+
+rpm -Uvh psckageName  # upgrades a package.
+------------------------------------------------
+
+
+# Yum commands for finding software groups:
+# NOTE: in RHEL 7 group install / remove are broken.
+------------------------------------------------------------
+yum groups summary
+
+yum group info LibreOffice   # example
+
+yum group list ids 
+
+yum group list ids kde\*
+
+yum group list hidden ids kde\*
+
+# for installing software groups
+yum group install "group name"
+
+# Four equivalent ways of installing the KDE Desktop group
+yum group install "KDE Desktop"
+yum group install kde-desktop
+yum install @"KDE Desktop"
+yum install @kde-desktop
+
+
+# for UN-installing software groups
+yum group remove "group name"
+
+# Four equivalent ways of installing the KDE Desktop group
+yum group remove "KDE Desktop"
+yum group remove kde-desktop
+yum remove @"KDE Desktop"
+yum remove @kde-desktop
+
+# documentation
+https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/System_Administrators_Guide/sec-Working_with_Package_Groups.html
+
+
+
+# excluding a file from yum update:
+# Example
+yum --exclude openssh --exclude openssh-clients update
+
+
+
+------------------------------------------------
+
+Kernel settings:
+------------------------------------------------
+# Used to drop down kerel revision to a lower level after updatedb
+# in /home/user/  .bash_profile .bashrc
+LD_ASSUME_KERNEL
+
+------------------------------------------------
+
+
+Cloning a drive over a network:
+------------------------------------------------
+# Cloning a partition
+# From physical disk /dev/sda, partition 1, to physical disk /dev/sdb, partition 1.
+dd if=/dev/sda1 of=/dev/sdb1 bs=64K conv=noerror,sync
+
+# Cloning an entire hard disk
+dd if=/dev/sdX of=/dev/sdY bs=512 conv=noerror,sync
+
+# save the MBR as mbr.img
+dd if=/dev/sdX of=/path/to/mbr_file.img bs=512 count=1
+
+# To restore
+dd if=/path/to/mbr_file.img of=/dev/sdX
+
+# If you only want to restore the boot loader, 
+# but not the primary partition table entries, 
+# just restore the first 446 bytes of the MBR:
+dd if=/path/to/mbr_file.img of=/dev/sdX bs=446 count=1
+
+# To restore only the partition table, one must use:
+dd if=/path/to/mbr_file.img of=/dev/sdX bs=1 skip=446 count=64
+
+# You can also get the MBR from a full dd disk image:
+dd if=/path/to/disk.img of=/path/to/mbr_file.img bs=512 count=1
+------------------------------------------------
+
+
+# Create disk image
+------------------------------------------------
+## 1. Boot from a live media.
+## 2. Make sure no partitions are mounted from the source hard drive.
+## 3. Mount the external HD
+## 4. Backup the drive.
+dd if=/dev/sdX conv=sync,noerror bs=64K | gzip -c  > /path/to/backup.img.gz
+
+# If necessary, split the disk image in volumes
+dd if=/dev/sdX conv=sync,noerror bs=64K | gzip -c | split -a3 -b2G - /path/to/backup.img.gz
+
+# If there is not enough disk space locally, you may send the image through ssh:
+dd if=/dev/sda | ssh username@servername.net "dd of=/dev/sdb"
+# or
+dd if=/dev/sdX conv=sync,noerror bs=64K | gzip -c | ssh user@local dd of=backup.img.gz
+
+# Save extra information about the drive geometry necessary in order to interpret the 
+# partition table stored within the image. The most important of which is the cylinder size.
+fdisk -l /dev/sdX > /path/to/list_fdisk.info
+------------------------------------------------
+
+
+# Restore system
+------------------------------------------------
+# To restore your system:
+gunzip -c /path/to/backup.img.gz | dd of=/dev/sdX
+
+# When the image has been split, use the following instead:
+cat /path/to/backup.img.gz* | gunzip -c | dd of=/dev/sdX
+
+
+
+# Using ddrescue
+------------------------------------------------
+# To clone a faulty or dying drive, run ddrescue twice. 
+# First round, copy every block without read error and log the errors to rescue.log.
+ddrescue -f -n /dev/sdX /dev/sdY rescue.log
+
+# Second round, copy only the bad blocks and try 
+# 3 times to read from the source before giving up.
+ddrescue -d -f -r3 /dev/sdX /dev/sdY rescue.log
+
+# Now you can check the file system for corruption and mount the new drive.
+fsck -f /dev/sdY
+------------------------------------------------
+
+
+Resizing swap space on an LVM partition:
+--------------------------------------------------
+https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Storage_Administration_Guide/s1-swap-removing.html
+
+=============================================================
+
+
+15.1. Adding Swap Space
+
+Sometimes it is necessary to add more swap space after installation. 
+For example, you may upgrade the amount of RAM in your system from 
+1 GB to 2 GB, but there is only 2 GB of swap space. It might be 
+advantageous to increase the amount of swap space to 4 GB if 
+you perform memory-intense operations or run applications that 
+require a large amount of memory. 
+
+You have three options: create a new swap partition, create 
+a new swap file, or extend swap on an existing LVM2 logical 
+volume. It is recommended that you extend an existing logical volume. 
+
+
+
+
+
+15.1.1. Extending Swap on an LVM2 Logical Volume
+
+By default, Red Hat Enterprise Linux 6 uses all available 
+space during installation. If this is the case with your 
+system, then you must first add a new physical volume to 
+the volume group used by the swap space. For instructions 
+on how to do so, refer to Section 14.2.2, “Adding Unallocated 
+Volumes to a Volume Group”. 
+
+After adding additional storage to the swap space's volume 
+group, it is now possible to extend it. To do so, perform 
+the following procedure (assuming /dev/VolGroup00/LogVol01 
+is the volume you want to extend by 2 GB): 
+
+
+Procedure 15.1. Extending Swap on an LVM2 Logical Volume
+
+1. Disable swapping for the associated logical volume: 
+
+# swapoff -v /dev/VolGroup00/LogVol01
+
+
+2. Resize the LVM2 logical volume by 2 GB: 
+
+# lvresize /dev/VolGroup00/LogVol01 -L +2G
+
+
+3. Format the new swap space: 
+
+# mkswap /dev/VolGroup00/LogVol01
+
+
+4. Enable the extended logical volume: 
+
+# swapon -v /dev/VolGroup00/LogVol01
+
+
+To test if the logical volume was successfully extended, use cat 
+/proc/swaps or free to inspect the swap space. 
+
+
+
+
+
+15.1.2. Creating an LVM2 Logical Volume for Swap
+
+To add a swap volume group (assuming /dev/VolGroup00/LogVol02 
+is the swap volume you want to add): 
+
+
+1. Create the LVM2 logical volume of size 2 GB: 
+# lvcreate VolGroup00 -n LogVol02 -L 2G
+
+
+2. Format the new swap space: 
+# mkswap /dev/VolGroup00/LogVol02
+
+
+3. Add the following entry to the /etc/fstab file: 
+# /dev/VolGroup00/LogVol02 swap swap defaults 0 0
+
+
+4. Enable the extended logical volume: 
+# swapon -v /dev/VolGroup00/LogVol02
+
+
+To test if the logical volume was successfully created, use 
+cat /proc/swaps or free to inspect the swap space. 
+
+
+
+
+
+15.1.3. Creating a Swap File
+
+To add a swap file: 
+
+
+Procedure 15.2. Add a swap file
+
+1. Determine the size of the new swap file in megabytes and 
+multiply by 1024 to determine the number of blocks. For example, 
+the block size of a 64 MB swap file is 65536. 
+
+
+2. Type the following command with count being equal to the 
+desired block size: 
+# dd if=/dev/zero of=/swapfile bs=1024 count=65536
+
+
+3. Setup the swap file with the command: 
+# mkswap /swapfile
+
+
+4. It is recommended that the permissions are changed to 
+prevent the swap being world readable. 
+# chmod 0600 /swapfile
+
+
+5. To enable the swap file immediately but not automatically at 
+boot time: 
+# swapon /swapfile
+
+
+6. To enable it at boot time, edit /etc/fstab to include the 
+following entry: 
+
+/swapfile swap swap defaults 0 0 
+
+The next time the system boots, it enables the new swap file. 
+
+
+To test if the new swap file was successfully created, use 
+cat /proc/swaps or free to inspect the swap space. 
+
+-------------------------------------------------
+15.2. Removing Swap Space
+
+Sometimes it can be prudent to reduce swap space after installation. 
+For example, say you downgraded the amount of RAM in your system 
+from 1 GB to 512 MB, but there is 2 GB of swap space still assigned. 
+It might be advantageous to reduce the amount of swap space to 1 GB, 
+since the larger 2 GB could be wasting disk space. 
+
+You have three options: remove an entire LVM2 logical volume used for 
+swap, remove a swap file, or reduce swap space on an existing LVM2 
+logical volume. 
+
+
+
+
+
+15.2.1. Reducing Swap on an LVM2 Logical Volume
+
+To reduce an LVM2 swap logical volume 
+(assuming /dev/VolGroup00/LogVol01 is the volume you want to reduce): 
+
+
+Procedure 15.3. Reducing an LVM2 swap logical volume
+
+1. Disable swapping for the associated logical volume: 
+# swapoff -v /dev/VolGroup00/LogVol01
+
+
+2. Reduce the LVM2 logical volume by 512 MB: 
+# lvreduce /dev/VolGroup00/LogVol01 -L -512M
+
+
+3. Format the new swap space: 
+# mkswap /dev/VolGroup00/LogVol01
+
+
+4. Enable the extended logical volume: 
+# swapon -v /dev/VolGroup00/LogVol01
+
+
+To test if the swap's logical volume size was successfully 
+reduced, use cat /proc/swaps or free to inspect the swap space. 
+Prev
+
+
+================================================================================
+
+
+
+
+EXTENDING NON-LVM Partitions
+-------------------------------------------
+## example from Pam Cherry
+# this will need to be tested in the future....
+
+..............
+parted /dev/sdb resizepart 1 400M
+
+resize2fs /dev/sdb1 400M
+
+e2fsck -f -y -v -C 0 /dev/sdb1
+
+--------------------------------------------
+
+
+
+
+
+
+
+# Virtual Machine Commands (KVM)
+------------------------------------------------
+# These tools are installed as part of the libguestfs-tools package.
+# A command-line tool for quickly building and customizing new virtual machines
+virt-builder
+
+
+# Configure VMTools
+vmware-config-tools.pl
+
+
+# A command-line tool that can be used to quickly view 
+# the contents of one or more files in a
+# specified virtual machine's disk or disk image.
+virt-cat 
+
+# A command-line tool for customizing virtual machine disk images.
+virt-customize
+
+# A command-line tool used to show the actual physical 
+# disk usage of virtual machines, similar to the command-line tool df.
+virt-df
+
+# A command-line tool for showing differences between the file 
+# systems of two virtual machines,
+virt-diff
+
+# A command-line tool used to edit files that exist on a specified virtual machine.
+virt-edit
+
+# A command-line tool used to discover file systems, 
+# partitions, logical volumes and their sizes in a disk image or virtual machine
+virt-filesystems
+
+# A command-line tool that can examine a virtual machine or disk image to determine the
+# version of its operating system and other information.
+virt-inspector
+
+
+# A command-line tool for listing log files from virtual machines.
+virt-log
+
+
+# A command-line tool that lists files and directories inside a virtual machine.
+virt-ls
+
+# A command-line tool for creating a file system based on a tar archive or files in a directory.
+virt-make-fs
+
+# A command-line tool that provides a rescue shell and some simple recovery tools for
+# unbootable virtual machines and disk images.
+virt-rescue
+
+# A command-line tool to resize virtual machine disks, and resize or delete any partitions on
+# a virtual machine disk.
+virt-resize 
+
+# A command-line tool to make a virtual machine disk (or any disk image) thin-provisioned.
+virt-sparsify
+
+# A command-line tool to reset, customize, or unconfigure virtual machines to prepare a
+# template for creating clones.
+virt-sysprep
+
+# A command-line archive tool for unpacking an uncompressed tarball into a virtual machine
+# disk image or specified libvirt domain.
+virt-tar-in
+
+# A command-line archive tool for packing a virtual machine disk image directory into a tarball.
+virt-tar-out
+
+# A command-line utility similar to to p, which shows statistics related to virtualized domains.
+virt-top
+
+
+# A command-line tool for converting virtual machines from a foreign hypervisor to run on
+# KVM managed by libvirt,
+virt-v2v
+
+
+# A minimal tool for displaying the graphical console of a virtual machine via the VNC and
+# SPICE protocols.
+virt-viewer
+
+
+# A shell script that detects whether a program is running in a virtual machine.
+virt-what
+
+
+# The virt-who package is a Red Hat Enterprise Linux host agent that queries lib virt for guest UUIDs.
+virt-who
+
+# A command-line tool to validate lib virt XML files for compliance with the published schema
+virt-xml-validate
+
+
+
+
+
+
+
+------------------------------------------------
+
+
+
+# getting and configureing IP Addresses
+------------------------------------------------
+# in RHEL 7 and beyond, the ipconf is not used
+# the new address config too is simply ip.
+
+# Show information for all addresses
+ip addr
+
+# Display information only for device em1
+ip addr show dev em1
+
+
+# ifconfig eth0 up
+ip link set eth0 up
+
+# ifconfig eth0 down
+ip link set eth0 down
+
+# ifconfig -a
+ip addr
+
+# ifconfig eth0 192.168.1.1
+ip addr add 192.168.1.1/24 dev eth0
+
+# ifconfig eth0 netmask 255.255.255.0
+ip addr add 192.168.1.1/24 dev eth0
+
+# Add address 192.168.1.1 with netmask 24 to device em1
+ip addr add 192.168.1.1/24 dev em1
+
+# Remove address 192.168.1.1/24 from device em1
+ip addr del 192.168.1.1/24 dev em1
+
+# netstat
+ss
+ss -neopa
+ip maddr
+
+# Show information for all interfaces
+ip link
+
+# Display information only for device em1
+ip link show dev em1
+
+# Display interface statistics
+ip -s link
+
+# List all of the route entries in the kernel
+ip route
+
+# Display multicast information for all devices
+ip maddr
+
+# Display multicast information for device em1
+ip maddr show dev em1
+
+# Display neighbour objects
+ip neigh
+
+# Show the ARP cache for device em1
+ip neigh show dev em1
+
+# Display ip commands and arguments
+ip help
+
+# Display address commands and arguments
+ip addr help
+
+# Add a default route (for all addresses) via the local 
+# gateway 192.168.1.1 that can be reached on device em1
+ip route add default via 192.168.1.1 dev em1
+
+# Add a route to 192.168.1.0/24 via the gateway at 192.168.1.1
+ip route add 192.168.1.0/24 via 192.168.1.1
+
+
+# Add a route to 192.168.1.0/24 that can be reached on device em1
+ip route add 192.168.1.0/24 dev em1
+
+
+# Delete the route for 192.168.1.0/24 via the gateway at 192.168.1.1
+ip route delete 192.168.1.0/24 via 192.168.1.1
+
+# Replace the defined route for 192.168.1.0/24 to use device em1
+ip route replace 192.168.1.0/24 dev em1
+
+
+# Display the route taken for IP 192.168.1.5
+ip route get 192.168.1.5
+
+
+# Add address 192.168.1.1 with MAC 1:2:3:4:5:6 to em1
+ip neigh add 192.168.1.1 lladdr 1:2:3:4:5:6 dev em1
+
+# Invalidate the entry for 192.168.1.1 on em1
+ip neigh del 192.168.1.1 dev em1
+
+
+# Replace the entry for address 192.168.1.1 to use MAC 1:2:3:4:5:6 on em1
+ip neigh replace 192.168.1.1 lladdr 1:2:3:4:5:6 dev em1
+
+# Send ARP request to 192.168.1.1 via interface eth0
+arping -I eth0 192.168.1.1
+
+# Check for duplicate MAC addresses at 192.168.1.1 on eth0
+arping -D -I eth0 192.168.1.1
+
+# show status of all devices in NetworkManager
+# /etc/NetworkManager/nm-system-settings.conf
+# /etc/NetworkManager/NetworkManager.conf 
+# use these config files to tell NetworkManager to 
+# stop controling an interface
+
+nmcli dev status
+
+------------------------------------------------
+
+
+
+
+
+dtrace-groups bug in Oracle 7.1
+----------------------------------------------------
+# oracle 7.1 / 7.2 has a bug which yum will error outif more than 3 updates
+# to the kernel are done. this is a known bug. the fix is to remove
+# the dtrace-groups rpm package. then run yum update to update to the
+# latest kernel packages.
+
+yum remove dtrace-modules
+.......
+yum update
+.......
+REBOOT
+.........
+uname -a
+
+----------------------------------------------------
+
+
+
+
+# set debug log for sysctl
+----------------------------------------------------
+# when needing to debug sysctl.conf settings chaging 
+# on reboot... this is a handy command to run.
+
+SYSTEMD_LOG_LEVEL=debug 
+/usr/lib/systemd/systemd-sysctl 
+
+# example of searching
+sysctl -p
+sysctl -a | grep -i forwarding
+
+
+-------------------------------------------------------
+
+
+
+
+
+Oracle Linux ASM issues:
+---------------------------------------------------------
+# this issue came up when performing a routen yum update on Oracle Linux 7.2 > 7.3
+# in case this issue creeps up again, this is how we fixed it.
+# problem is created by an update wiping out the oracleasm config file getting
+# wiped out by an update. it is best to check after any major update in the oracle 
+# asm config to make sure the disk volumes are still listed.
+# Make these changes after updates and before reboot.
+
+
+
+cd /etc/init.d
+oracleasm configure  (to show current settings,   ORACLEASM_ENABLED should be true if not reconfigure)
+
+To reconfigure
+
+./oracleasm configure
+# Enter this at the command prompt when asked:
+
+grid
+asmadmin
+y
+<enter>
+<enter>
+................
+# Output will look like below, enter data from above at the prompts.
+
+
+...................................................
+
+Configuring the Oracle ASM library driver.
+
+This will configure the on-boot properties of the Oracle ASM library
+driver.  The following questions will determine whether the driver is
+loaded on boot and what permissions it will have.  The current values
+will be shown in brackets ('[]').  Hitting <ENTER> without typing an
+answer will keep that current value.  Ctrl-C will abort.
+
+Default user to own the driver interface [grid]: grid
+Default group to own the driver interface [asmadmin]: asmadmin
+Start Oracle ASM library driver on boot (y/n) [n]: y
+Scan for Oracle ASM disks on boot (y/n) [y]:
+Writing Oracle ASM library driver configuration: done
+Initializing the Oracle ASMLib driver:                     [  OK  ]
+Scanning the system for Oracle ASMLib disks:   
+...................................................
+
+oracleasm configure   # (to show new settings)
+
+
+
+oracleasm scandisks
+
+Reloading disk partitions: done
+Cleaning any stale ASM disks...
+Scanning system for ASM disks...
+
+oracleasm listdisks
+
+
+ASM1
+ASM2
+ASM3
+ASM4
+CRS1
+CRS2
+CRS3
+
+...................................................
+
+# If system has been rebooted you will need to do extra steps.  
+# Similar to above just a couple of extra steps.
+
+
+
+cd /etc/init.d
+oracleasm configure  #(to show current settings,   ORACLEASM_ENABLED should be true if not reconfigure)
+
+To reconfigure
+.................................................
+./oracleasm configure
+.....
+# Enter this at the command prompt when asked:
+
+grid
+asmadmin
+y
+<enter>
+<enter>
+.........................
+# Output will look like below, enter data from above at the prompts.
+
+
+_________________________________________________________________________
+Configuring the Oracle ASM library driver.
+
+This will configure the on-boot properties of the Oracle ASM library
+driver.  The following questions will determine whether the driver is
+loaded on boot and what permissions it will have.  The current values
+will be shown in brackets ('[]').  Hitting <ENTER> without typing an
+answer will keep that current value.  Ctrl-C will abort.
+
+Default user to own the driver interface [grid]: grid
+Default group to own the driver interface [asmadmin]: asmadmin
+Start Oracle ASM library driver on boot (y/n) [n]: y
+Scan for Oracle ASM disks on boot (y/n) [y]:
+Writing Oracle ASM library driver configuration: done
+Initializing the Oracle ASMLib driver:                     [  OK  ]
+Scanning the system for Oracle ASMLib disks:   
+_______________________________________________________________________ 
+
+oracleasm configure (to show new settings)
+
+oracleasm init   (additional set if rebooted)
+
+oracleasm scandisks
+
+Reloading disk partitions: done
+Cleaning any stale ASM disks...
+Scanning system for ASM disks...
+
+oracleasm listdisks
+
+
+ASM1
+ASM2
+ASM3
+ASM4
+CRS1
+CRS2
+CRS3
+
+
+
+
+You have to mount manually diskgroups (additonal step)
+
+su - grid
+ 
+$ sqlplus "/as sysasm"
+ 
+SQL> show parameter asm_diskgroups;
+ 
+ 
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+asm_diskgroups                       string      FRA, DATA
+ 
+If above query return value empty ,
+ 
+alter system set asm_diskgroups=FRA, DATA sid='+ASM';
+
+shutdown immediate;
+
+startup;
+
+
+----------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+===========================================================
