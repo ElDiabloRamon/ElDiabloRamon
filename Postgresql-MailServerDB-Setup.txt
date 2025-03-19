@@ -1,0 +1,107 @@
+# Setup Postgresql for mail server
+
+NOTE: to login to the pgAdmin4 console, use the follwoing account
+postgres@hive32.net
+(root Password)
+
+# sudo -u postgres psql
+postgres=# CREATE USER mailreader;
+postgres=# REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+postgres=# REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+postgres=# GRANT CREATE ON SCHEMA public TO postgres;
+postgres=# GRANT USAGE ON SCHEMA public TO postgres;
+postgres=# CREATE DATABASE mail WITH OWNER mailreader;
+postgres=# \q 
+# sudo psql -U mailreader -d mail
+postgres=# \c mail
+
+mail=# CREATE TABLE aliases (
+    alias text NOT NULL,
+    email text NOT NULL
+);
+mail=# CREATE TABLE users (
+    email text NOT NULL,
+    password text NOT NULL,
+    maildir text NOT NULL,
+    created timestamp with time zone DEFAULT now()
+);
+mail=# ALTER TABLE aliases OWNER TO mailreader;
+mail=# ALTER TABLE users OWNER TO mailreader;
+mail=# \q
+
+
+-----------------------------------------
+sudo vim /etc/postgresql/12/main/pg_hba.conf
+
+# TYPE DATABASE USER ADDRESS METHOD
+local  all      all          md5
+
+host all postgres 127.0.0.1/32 trust
+
+(OR...)
+
+sudo psql -U mailreader -d mail
+
+
+-----------------------------------------
+
+# doveadm pw -s sha512 -r 100
+Enter new password: ...
+Retype new password: ...
+{SHA512}.............................................................==
+# psql -U mailreader -d mail
+mail=# INSERT INTO users (
+    email,
+    password,
+    maildir
+) VALUES (
+    'osadmin@hive32.net',
+    '{SHA512}.............................................................==',
+    'osadmin/'
+);
+
+......
+
+INSERT INTO users (
+    email,
+    password,
+    maildir
+) VALUES (
+    'postmaster@hive32.net',
+    '{SHA512}.............................................................==',
+    'postmaster/'
+);
+.....
+
+
+INSERT INTO users (
+    email,
+    password,
+    maildir
+) VALUES (
+    'gcubebuddy@hive32.net',
+    '{SHA512}.............................................................==',
+    'gcubebuddy/'
+);
+
+......
+
+INSERT INTO users (
+    email,
+    password,
+    maildir
+) VALUES (
+    'matthew.cross@hive32.net',
+    '{SHA512}.............................................................==',
+    'matthew.cross/'
+);
+
+INSERT INTO users (
+    email,
+    password,
+    maildir
+) VALUES (
+    'postgres@localhost',
+    '{SHA512}.............................................................==',
+    'postgres/'
+);

@@ -1,0 +1,202 @@
+ 
+24) Setup ClamAv on RHEL
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Setup this is a setup guid to configure ClamAV after installing it.
+# The daily cron job scans the entire server every day. 
+# The hourly cron job scans files which were created or 
+# modified within the last hour. This should provide rapid 
+# notification of any infection without sacrificing performance. 
+# Each time the scan runs it checks the scan logs to see if 
+# there were any infected files found, and if so immediately 
+# sends notification via email.
+ 
+ 
+Inital config of FreshClam
+...........................................................................
+# first edit the /etc/freshclam.conf file and select the settings you want.
+ 
+sudo nano /etc/freshclam.conf
+ 
+# after editing the file, run a freshclam update.
+ 
+sudo freshclam
+ 
+ 
+ 
+ 
+ 
+ 
+...........................................................................
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+CRONTAB:
+............................................................................
+ 
+# setup crontab to get freshclam updates:
+ 
+sudo nano /etc/crontab
+ 
+# Add the following lines to crontab:
+# Update ClamAV database
+0 01 * * * /usr/bin/freshclam
+ 
+ 
+ 
+CRON.DAILY:
+............................................................................
+ 
+ 
+# next we are going to setup clam scan automation
+# for the cron.daily:
+ 
+sudo nano /etc/cron.daily/clamscan_daily
+ 
+#################################################
+# CLAMSCAN_DAILY = START COPY N PASTE HERE      #
+#################################################
+#!/bin/bash
+ 
+# Log rotation
+logrotate -f /etc/logrotate_clamscan.conf
+ 
+# email subject
+SUBJECT=”VIRUS DETECTED ON `hostname`!!!”
+# Email To ?
+EMAIL=”recipient@ngc.com”
+# Log location
+LOG=/var/log/clamav/clamscan.log
+check_scan () {
+# Check the last set of results. If there are any “Infected” counts that aren’t zero, we have a problem.
+if [ `tail -n 12 ${LOG} | grep Infected | grep -v 0 | wc -l` != 0 ]
+then
+EMAILMESSAGE=`mktemp /tmp/virus-alert.XXXXX`
+echo “To: ${EMAIL}” >> ${EMAILMESSAGE}
+echo “From: clamav@ngc.com” >> ${EMAILMESSAGE}
+echo “Subject: ${SUBJECT}” >> ${EMAILMESSAGE}
+echo “Importance: High” >> ${EMAILMESSAGE}
+echo “X-Priority: 1″ >> ${EMAILMESSAGE}
+echo “`tail -n 50 ${LOG}`” >> ${EMAILMESSAGE}
+sendmail -t < ${EMAILMESSAGE}
+fi
+}
+clamscan -r / –exclude-dir=/sys/ –quiet –infected –log=${LOG}
+ 
+check_scan
+#################################################
+# CLAMSCAN_DAILY = END COPY N PASTE HERE        #
+#################################################
+ 
+# Now we need to chmod the file 
+sudo chmod +x /etc/cron.daily/clamscan_daily
+ 
+ 
+ 
+ 
+ 
+CRON.HOURLY:
+............................................................................
+ 
+# now we need to set up clamscan for hourly scans in
+# the cron.hourly settings:
+ 
+sudo nano /etc/cron.hourly/clamscan_hourly
+ 
+#################################################
+# CLAMSCAN_HOURLY = START COPY N PASTE HERE     #
+#################################################
+#!/bin/bash
+# email subject
+SUBJECT=”VIRUS DETECTED ON `hostname`!!!”
+# Email To ?
+EMAIL=”recipient@ngc.com”
+# Log location
+LOG=/var/log/clamav/clamscan.log
+check_scan () {
+# Check the last set of results. If there are any “Infected” counts that aren’t zero, we have a problem.
+if [ `tail -n 12 ${LOG} | grep Infected | grep -v 0 | wc -l` != 0 ]
+then
+EMAILMESSAGE=`mktemp /tmp/virus-alert.XXXXX`
+echo “To: ${EMAIL}” >> ${EMAILMESSAGE}
+echo “From: clamav@ngc.com” >> ${EMAILMESSAGE}
+echo “Subject: ${SUBJECT}” >> ${EMAILMESSAGE}
+echo “Importance: High” >> ${EMAILMESSAGE}
+echo “X-Priority: 1″ >> ${EMAILMESSAGE}
+echo “`tail -n 50 ${LOG}`” >> ${EMAILMESSAGE}
+sendmail -t < ${EMAILMESSAGE}
+fi
+}
+find / -not -wholename ‘/sys/*’ -and -not -wholename ‘/proc/*’ -mmin -61 -type f -print0 | xargs -0 -r clamscan –exclude-dir=/proc/ –exclude-dir=/sys/ –quiet –infected –log=${LOG}
+check_scan
+find / -not -wholename ‘/sys/*’ -and -not -wholename ‘/proc/*’ -cmin -61 -type f -print0 | xargs -0 -r clamscan –exclude-dir=/proc/ –exclude-dir=/sys/ –quiet –infected –log=${LOG}
+check_scan
+#################################################
+# CLAMSCAN_HOURLY = END COPY N PASTE HERE       #
+#################################################
+ 
+# Run chmod on the file so it can execute:
+sudo chmod +x /etc/cron.hourly/clamscan_hourly
+ 
+............................................................................
+ 
+ 
+ 
+ 
+ 
+ 
+# Make the logrotate configuration file for clamscan
+sudo nano /etc/logrotate_clamscan.conf
+ 
+ 
+#####################################################
+# LOGROTATE_CLAMSCAN>CONF = START COPY N PASTE HERE #
+#####################################################
+ 
+/var/log/clamav/clamscan.log {
+rotate 30
+daily
+ifempty
+missingok
+nocompress
+}
+ 
+# Remove the ClamAV test virus files
+#rm -rf /usr/share/doc/clamav-0.97.7/test/
+ 
+# Manual scanning with ClamAV
+# Scan a specific file
+#clamscan /opt/file.txt
+ 
+# Scan a directory
+clamscan -r /opt
+clamscan -r /tmp
+clamscan -r /var
+clamscan -r /home
+
+
+
+
+# Scan the contents of a directory and all sub-directories
+#clamscan -r /opt
+ 
+#####################################################
+# LOGROTATE_CLAMSCAN.CONF = END COPY N PASTE HERE   #
+#####################################################
+ 
+ 
+ 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

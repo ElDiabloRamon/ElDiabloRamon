@@ -1,0 +1,165 @@
+# .cshrc - csh resource script, read at beginning of execution by each shell
+#
+#
+
+# -- Set up command aliases
+alias searchports	'find /usr/ports -type f -name pkg-descr | xargs grep -i $1'
+alias cdp	'echo $cdpath | tr -s : \\012'
+alias checksym	'find -L . -type l'
+alias cls	'clear'
+alias cp	'cp -ip'
+alias cx	'chmod ugo+x'
+alias d		'tcsh $HOME/.login'
+alias df	'df -h -t ufs,nfs'
+alias exd	'export DISPLAY=":0"'
+alias free	'freebsd-memory | tail -n5'
+alias ft	'find . -maxdepth 1 -type f -mtime -1'
+alias fta	'find . -type f -mtime -1'
+alias grep	'grep --color="auto"'
+alias h		'history'
+alias h25	'history 25'
+alias hist	'history|grep $1'
+alias hs	'history | egrep'
+alias j		'jobs -l'
+alias key	'man -k'
+alias la	'ls -a'
+alias lf	'ls -FA'
+alias ll	'ls -lA'
+alias ls	'ls -LFGP'
+alias lsa	'ls -ld .*'
+alias lsc	'ls -sSh'
+#alias lsd	'ls -ld *(-/DN)'
+alias lsd	'ls -ld *'
+alias lsnew	'ls -rtl *(.) | tail '
+alias lt	'ls -t | head'
+alias mc	'mc -ab'
+alias mv	'mv -i'
+alias na	'screen -t "\!:1" "\!:1"'
+alias notes	'vim /home/rbelk/notes.txt'
+alias ns	'screen -t "\!:1" ssh -o ServerAliveInterval=300 -o TCPKeepAlive=yes "\!:1"'
+alias pi	'pkg_info'
+alias pine	'alpine'
+alias po	'popd'
+alias pu	'pushd'
+alias pwfh	'ps wfh'
+alias g		'elinks http://www.google.com'
+alias renew	'source ~/.tcshrc'
+alias rlog	'rlog -zLT'
+alias rm	'/usr/local/scripts/rm_alias.sh'
+alias root	'sudo -i'
+alias rr	'rehash ; renew'
+alias rrm	'/bin/rm'
+alias scppub	'scp $HOME/.ssh/id_dsa.pub "\!:1":~/.ssh/authorized_keys'
+alias showpath	'echo $PATH | tr -s : \\012'
+alias shred	'gshred'
+alias sl	'screen -ls'
+alias spin	'spinner -n'
+alias spn	'portless -W'
+alias srd	'screen -RD $USER'
+alias t		'/usr/local/bin/todo -d $HOME/.todo.cfg'
+alias tcfg	'vim ~/.tcshrc'
+alias toupgrade	'pkg_version -o -I -L='
+alias ttar	'tar -tvzf'
+alias utar	'tar -xvzf'
+alias vdiff	'vim -d'
+alias vi	'vim'
+alias viewlog	'screen -t viewlog sudo tail -F /var/log/all.log'
+alias vnstat	'vnstat -i em0'
+alias vvi	'/usr/bin/vi'
+alias weather	'weather -a -z ms/USMS0175 -f'
+alias webshare	'python -m SimpleHTTPServer 9914'
+alias whatsmyip	'elinks -dump http://whatismyip.org/'
+alias which-command	'whence'
+alias xs	'screen -l -xR -S $USER'
+alias yesterday	'date -v-1d +%d/%m/%Y'
+
+[ -x /usr/local/bin/most ] && alias less	'most -w'
+[ -x /usr/local/bin/most ] && alias more	'most -w'
+[ -x /usr/local/bin/most ] && alias most	'most -w'
+
+# -- A righteous umask
+umask 077
+
+# -- Set up search path
+set path = (\
+        /sbin \
+        /bin \
+        /usr/sbin \
+        /usr/bin \
+        /usr/games \
+        /usr/local/sbin \
+        /usr/local/bin \
+        /usr/X11R6/bin \
+        $HOME/bin \
+        $HOME/mybin \
+        /usr/local/scripts \
+        /usr/local/uxscripts \
+        )
+
+# -- Set up CDPATH
+set cdpath = (\
+        . \
+        ~/ \
+        ~/folders \
+        ~/projects \
+        ~/work \
+        )
+
+# -- Set up global options
+limit coredumpsize 0
+setenv  LANG en_US.UTF-8
+setenv  EDITOR  vim
+setenv  PAGER   less
+setenv  BLOCKSIZE       K
+setenv  CLICOLOR
+setenv  WWW_HOME "http://www.google.com/"
+setenv	FTP_PASSIVE_MODE
+setenv  LSCOLORS "ExGxFxdxCxegedabagExEx"
+setenv  OS `uname`
+setenv  GREP_COLOR '1;37;41'
+setenv	HTTP_AUTH "'basic:*"
+
+# -- An interactive shell -- set some stuff up
+if ($?prompt) then
+	set prompt="[%B%m: %/%b] `date +%a` %t <\!> $ "
+	set colorcat
+	set ignoreeof
+	set autoexpand
+	set autocorrect
+	set correct=cmd
+	set rmstar
+	set filec
+	set history = 1000
+	set savehist = 1000
+	set mail = (/var/mail/$USER)
+	set noclobber
+	set autolist
+	set correct = cmd
+	set nobeep
+#	set watch = (0 any any)
+
+	complete {,un}alias     'p/1/a/' 'p/2/c/'
+	complete {c,push,pop}d  'C/*/d/'
+	complete exec           'p/1/c/'
+	complete man            'C/*/c/'
+	complete {where,which}  'C/*/c/'
+	complete {,un}set       'p/1/s/'
+	complete {,un}setenv    'C/*/e/'
+	complete printenv       'C/*/e/'
+	complete bindkey        'p/1/b/'
+	complete fg             'c/%/j/'
+	complete kill           'c/%/j/' 'c/-/S/'
+	complete chgrp          'p/1/g/'
+	complete chown          'p/1/u/'
+	complete limit          'C/*/l/'
+	complete find           'p/1/d/' 'n/-user/u/' 'n/-group/g/'
+	complete pkg_info	'c/-/(a b v p q Q c d D f g i I j k K r R m L s o G W O x X e E l t V P)/' \
+			'n@*@`\ls -1 /var/db/pkg | sed "s%/var/db/pkg/%%;s%^\(.*\)-[0-9].*%\1%"`@'
+	complete pkg_delete	'n@*@`\ls -1 /var/db/pkg | sed "s%/var/db/pkg/%%"`@'
+	complete portmaster	'n@*@`\ls -1 /var/db/pkg | sed "s%/var/db/pkg/%%;s%^\(.*\)-[0-9].*%\1%"`@'
+	complete portsnap	'c/-/(I d f k p s)/' \
+			'n/-d/d/' \
+			'n/-p/d/' \
+			'n/*/(fetch extract update)/'
+	complete pkg_add 'n@-r@`awk -F\| \{sub\(/-\[0-9\]\.\*\/\,\"\"\,\$1\)\;print\ \$1\} /usr/ports/INDEX | sort -u`@'
+endif

@@ -1,0 +1,9 @@
+# setup ssh keep alive
+
+
+sudo vim /etc/ssh/ssh_config
+
+Host *
+ServerAliveInterval 180
+ServerAliveCountMax 2
+

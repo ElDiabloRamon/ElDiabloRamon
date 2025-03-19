@@ -1,0 +1,5 @@
+dnf -y install epel-release
+
+dnf -y install httpd mariadb-server php php-pdo php-pecl-zip php-json php-common php-fpm php-mbstring php-cli php-mysqlnd php-json php-mbstring htop lynx elinks traceroute dstat pv mc iptraf hexedit p7zip ngrep nmon python3 python3-pip scapy python3-paramiko python3-ecdsa lrzsz
+
+dnf -y install ruby python3 perl php httpd php-pdo php-pecl-zip php-json php-common php-fpm php-mbstring php-cli php-json php-mbstring htop lynx elinks traceroute dstat pv mc iptraf hexedit p7zip ngrep nmon python3 python3-pip scapy python3-paramiko python3-ecdsa lrzsz clamav* postgresql aide  expect sed ncftp screen

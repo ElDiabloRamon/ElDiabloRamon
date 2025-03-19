@@ -1,0 +1,22 @@
+#!/bin/sh
+# firewall setup script for firewalld
+
+# open ports for http in firewall
+firewall-cmd --add-service=https --permanent;
+firewall-cmd --add-service=http --permanent;
+
+# vsftpd firewall setup
+firewall-cmd --add-service=ftp --permanent
+
+# Open other ports for spacewalk
+firewall-cmd --zone=dmz --add-port=5222/tcp --permanent
+firewall-cmd --zone=dmz --add-port=5269/tcp --permanent
+firewall-cmd --zone=dmz --add-port=69/udp --permanent
+
+# OpenSSH port
+firewall-cmd --add-service=ssh --permanent
+firewall-cmd --zone=public --add-port=22/tcp --permanent
+firewall-cmd --zone=dmz --add-port=22/tcp --permanent
+
+# restart firewall services
+firewall-cmd --reload;

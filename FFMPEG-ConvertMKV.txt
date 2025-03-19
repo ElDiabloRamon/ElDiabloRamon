@@ -1,0 +1,24 @@
+
+# for FLAC support add '-strict -2' by the codec area
+
+sudo ffmpeg -i input.mkv -codec copy output.mp4
+
+sudo ffmpeg -i  -codec copy ;
+
+
+sudo ffmpeg -i  -codec copy ; sudo  ffmpeg -i  -codec copy ; sudo  ffmpeg -i  -codec copy ; sudo  ffmpeg -i  -codec copy ; sudo  ffmpeg -i  -codec copy ; sudo  ffmpeg -i  -codec copy ; sudo ffmpeg -i  -codec copy ; sudo  ffmpeg -i  -codec copy ; sudo  ffmpeg -i  -codec copy ; sudo  ffmpeg -i  -codec copy ; sudo  ffmpeg -i  -codec copy ; sudo  ffmpeg -i  -codec copy ; sudo ffmpeg -i  -codec copy ; sudo  ffmpeg -i  -codec copy ; sudo  ffmpeg -i  -codec copy ; sudo  ffmpeg -i  -codec copy ; sudo  ffmpeg -i  -codec copy ; sudo  ffmpeg -i  -codec copy ;
+
+
+
+
+# with flac support
+
+sudo ffmpeg -i  -strict -2 -codec copy ; sudo  ffmpeg -i  -strict -2 -codec copy ; sudo  ffmpeg -i   -strict -2 -codec copy ; sudo  ffmpeg -i   -strict -2 -codec copy ; sudo  ffmpeg -i   -strict -2 -codec copy ; sudo  ffmpeg -i   -strict -2 -codec copy ; sudo ffmpeg -i   -strict -2 -codec copy ; sudo  ffmpeg -i   -strict -2 -codec copy ; sudo  ffmpeg -i   -strict -2 -codec copy ; sudo  ffmpeg -i   -strict -2 -codec copy ; sudo  ffmpeg -i   -strict -2 -codec copy ; sudo  ffmpeg -i   -strict -2 -codec copy ; sudo ffmpeg -i   -strict -2 -codec copy ; sudo  ffmpeg -i   -strict -2 -codec copy ; sudo  ffmpeg -i   -strict -2 -codec copy ; sudo  ffmpeg -i   -strict -2 -codec copy ; sudo  ffmpeg -i   -strict -2 -codec copy ; sudo  ffmpeg -i   -strict -2 -codec copy ;
+
+
+
+# encode batch dir from mp3 to ogg
+dir2ogg -r /dirName
+
+
+ 

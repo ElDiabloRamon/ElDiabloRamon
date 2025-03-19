@@ -1,0 +1,12 @@
+#!/bin/bash
+
+xset -dpms
+
+xset s off
+
+openbox-session &
+
+while true; do
+#	/usr/bin/chromium-browser --start-maximized --no-first-run --disable-infobars --disable-device-discovery-notifications --disable-notifications  --disable-translate "https://254650.tcplusondemand.com/app/webclock/#/EmployeeLogOn/254650/1" "https://vistatime.centralservers.com"
+	/usr/bin/chromium-browser --start-maximized --no-first-run --disable-infobars --disable-device-discovery-notifications --disable-notifications  --disable-translate "https://vistatime.centralservers.com"
+done

@@ -1,0 +1,4 @@
+192.168.0.26 mail mail.hive32.com
+192.168.0.17 dns1 dns1.hive32.com
+192.168.0.22 hive1 hive1.hive32.com
+192.168.0.16 CentNAS8 CentNAS8.hive32.com
